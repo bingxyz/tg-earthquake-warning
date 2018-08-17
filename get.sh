@@ -1,6 +1,6 @@
 #!/bin/bash
 botToken=$(sed -n 1p secret)
-channelId=$(sed -n 3p secret)
+channelId=$(sed -n 2p secret)
 chatId=$(sed -n 3p secret)
 lastNumber=$(sed -n 4p secret)
 
