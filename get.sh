@@ -21,7 +21,7 @@ for (( i = ${#numbers[@]} - 1; i >= 0; i-- ))
 do
     articleNumber=$(echo ${numbers[$i]} | sed 's/EC\(.*\)/\1/' | bc)
 
-    if [[ "$articleNumber" > "$lastNumber" ]]; then
+    if [[ "$articleNumber" -gt "$lastNumber" ]]; then
 
         imgUrl="$urlBase""${numbers[$i]}.gif"
         infoUrl="$urlBase""${numbers[$i]}.htm"
