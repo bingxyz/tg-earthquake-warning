@@ -1,10 +1,10 @@
 #!/bin/bash
 
-botToken=$(sed -n 1p secret)
-channelId=$(sed -n 2p secret)
-chatId=$(sed -n 3p secret)
-imgurCleintId=$(sed -n 4p secret)
-lastNumber=$(sed -n 5p secret)
+botToken=$(sed -n 1p .secret)
+channelId=$(sed -n 2p .secret)
+chatId=$(sed -n 3p .secret)
+imgurCleintId=$(sed -n 4p .secret)
+lastNumber=$(sed -n 5p .secret)
 
 function get_imgur_url()
 {
@@ -16,27 +16,27 @@ function get_imgur_url()
 sendPhotoUrl="https://api.telegram.org/bot"$botToken"/sendPhoto"
 sendMessageUrl="https://api.telegram.org/bot"$botToken"/sendMessage"
 
-urlBase='https://www.cwb.gov.tw/V7/earthquake/Data/quake/'
+earthquakeListUrl="https://www.cwb.gov.tw/V8/C/E/MOD/EQ_ROW.html?T=$(date +%Y%m%d)"
+earthquakeInfoBaseUrl="https://www.cwb.gov.tw/V8/C/E/EQ/EQ"
 
-getEarthquakeUrl="https://www.cwb.gov.tw/V7/modules/MOD_NEWEC.htm?_=$(date +%s)"
-numbers=$(curl -s "$getEarthquakeUrl" | grep -o 'EC[^L.]*.htm' | sort -u | sort -nr | sed 's/\(EC[^.]*\).htm/\1/')
+numbers=$(curl -s "$earthquakeListUrl" | grep -o '/V8/C/E/EQ/EQ109.*.html' | grep -v '109000.*' | sort -nr | sed 's/.*EQ\/EQ\([^.]*\).html/\1/')
 IFS=$'\n'
 numbers=($numbers)
 unset IFS
 
 
-
 for (( i = ${#numbers[@]} - 1; i >= 0; i-- ))
 do
-    articleNumber=$(echo ${numbers[$i]} | sed 's/EC\(.*\)/\1/' | bc)
+    articleNumber=$(echo ${numbers[$i]} | cut -c1-6 | bc)
     if [[ "$articleNumber" -gt "$lastNumber" ]]; then
+        
+        earthquakeInfoUrl="$earthquakeInfoBaseUrl""${numbers[$i]}.html"
+        caption=$(curl -s $earthquakeInfoUrl | grep og:description | sed 's/.*content="\([^"]*\)" \/>.*/\1/')
+        imgUrl=$(curl -s $earthquakeInfoUrl | grep -o 'href="/Data/earthquake/img/EC[^_]*_H.png"' | sed 's/href="\([^"]*\)"/\1/')
+        imgUrl=$(get_imgur_url "https://www.cwb.gov.tw"$imgUrl)
 
-        imgUrl=$(get_imgur_url "$urlBase""${numbers[$i]}.gif")
-        infoUrl="$urlBase""${numbers[$i]}.htm"
-        
-        caption=$(curl -s $infoUrl | grep description | sed 's/.*content="\([^"]*\)".*/\1/')
-        printf "%s : %s\n" "${numbers[$i]}" "$caption"
-        
+        printf "%s, %s, %s\n" "${numbers[$i]}" "$caption" "$imgUrl"
+
         data="chat_id="$channelId"&photo="$imgUrl"&caption="$caption""
         # data="chat_id="$chatId"&photo="$imgUrl"&caption="$caption""
         echo $data
@@ -46,9 +46,9 @@ do
         
         isSuccess=$(echo $response | jq '.ok')
         if [ "$isSuccess" = "true" ]; then
-            head -n -1 secret > tmp
-            cat tmp > secret
-            echo $articleNumber >> secret
+            head -n -1 .secret > tmp
+            cat tmp > .secret
+            echo $articleNumber >> .secret
             rm tmp
         fi
     fi
