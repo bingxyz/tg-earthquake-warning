@@ -32,7 +32,7 @@ do
         
         earthquakeInfoUrl="$earthquakeInfoBaseUrl""${numbers[$i]}.html"
         caption=$(curl -s $earthquakeInfoUrl | grep og:description | sed 's/.*content="\([^"]*\)" \/>.*/\1/')
-        imgUrl=$(curl -s $earthquakeInfoUrl | grep -o 'href="/Data/earthquake/img/EC[^_]*_H.png"' | sed 's/href="\([^"]*\)"/\1/')
+        imgUrl=$(curl -s $earthquakeInfoUrl | grep -o 'href="/Data/earthquake/img/EC[^_]*_H.png?v=[0-9]*"' | sed 's/href="\([^"]*\)"/\1/')
         imgUrl=$(get_imgur_url "https://www.cwb.gov.tw"$imgUrl)
 
         printf "%s, %s, %s\n" "${numbers[$i]}" "$caption" "$imgUrl"
