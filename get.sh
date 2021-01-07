@@ -6,6 +6,8 @@ chatId=$(sed -n 3p .secret)
 imgurCleintId=$(sed -n 4p .secret)
 lastNumber=$(sed -n 5p .secret)
 
+year=$(expr $(date +%Y) - 1911)
+
 function get_imgur_url()
 {
     response=`curl -s --location --request POST "https://api.imgur.com/3/image" --header "Authorization: Client-ID $imgurCleintId" -F image="$1"`
@@ -19,7 +21,7 @@ sendMessageUrl="https://api.telegram.org/bot"$botToken"/sendMessage"
 earthquakeListUrl="https://www.cwb.gov.tw/V8/C/E/MOD/EQ_ROW.html?T=$(date +%Y%m%d)"
 earthquakeInfoBaseUrl="https://www.cwb.gov.tw/V8/C/E/EQ/EQ"
 
-numbers=$(curl -s "$earthquakeListUrl" | grep -o '/V8/C/E/EQ/EQ109.*.html' | grep -v '109000.*' | sort -nr | sed 's/.*EQ\/EQ\([^.]*\).html/\1/')
+numbers=$(curl -s "$earthquakeListUrl" | grep -o "/V8/C/E/EQ/EQ"$year".*.html" | grep -v ""$year"000.*" | sort -nr | sed 's/.*EQ\/EQ\([^.]*\).html/\1/')
 IFS=$'\n'
 numbers=($numbers)
 unset IFS
