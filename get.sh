@@ -30,7 +30,7 @@ unset IFS
 for (( i = ${#numbers[@]} - 1; i >= 0; i-- ))
 do
     articleNumber=$(echo ${numbers[$i]} | cut -c1-6 | bc)
-    if [[ "$articleNumber" -gt "$lastNumber" ]]; then
+    if [[ "$articleNumber" -gt "$lastNumber" ]] && [[ "$articleNumber" -lt "$year"999"" ]]; then
         
         earthquakeInfoUrl="$earthquakeInfoBaseUrl""${numbers[$i]}.html"
         caption=$(curl -s $earthquakeInfoUrl | grep og:description | sed 's/.*content="\([^"]*\)" \/>.*/\1/')
