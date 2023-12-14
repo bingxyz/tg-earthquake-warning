@@ -18,8 +18,8 @@ function get_imgur_url()
 sendPhotoUrl="https://api.telegram.org/bot"$botToken"/sendPhoto"
 sendMessageUrl="https://api.telegram.org/bot"$botToken"/sendMessage"
 
-earthquakeListUrl="https://www.cwb.gov.tw/V8/C/E/MOD/EQ_ROW.html?T=$(date +%Y%m%d)"
-earthquakeInfoBaseUrl="https://www.cwb.gov.tw/V8/C/E/EQ/EQ"
+earthquakeListUrl="https://www.cwa.gov.tw/V8/C/E/MOD/EQ_ROW.html?T=$(date +%Y%m%d)"
+earthquakeInfoBaseUrl="https://www.cwa.gov.tw/V8/C/E/EQ/EQ"
 
 numbers=$(curl -s "$earthquakeListUrl" | grep -o "/V8/C/E/EQ/EQ"$year".*.html" | grep -v ""$year"000.*" | sort -nr | sed 's/.*EQ\/EQ\([^.]*\).html/\1/')
 IFS=$'\n'
